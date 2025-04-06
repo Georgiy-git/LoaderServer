@@ -1,0 +1,7 @@
+LoaderServer
+x64
+.vs
+error_code.cpp
+LoaderServer.vcxproj
+LoaderServer.vcxproj.filters
+LoaderServer.vcxproj.user
