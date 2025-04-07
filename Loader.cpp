@@ -48,6 +48,7 @@ void Loader::_get_command_from_buf(boost::system::error_code ec, size_t bytes)
 	}
 	else if (ec) {
 		std::cerr << "Ошибка при обработке информации: " << ec.message() << std::endl;
+		_async_read();
 		return;
 	}
 
