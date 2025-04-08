@@ -6,9 +6,13 @@
 #include <unordered_map>
 #include <functional>
 #include <boost/asio.hpp>
+#include <algorithm>
+
+#include "Commands.hpp"
 
 class Loader {
 public:
+
 	Loader(std::unique_ptr<boost::asio::ip::tcp::socket>&& socket);
 
 	void command();
@@ -16,6 +20,7 @@ public:
 private:
 	void _async_write(const char* mess);
 	void _async_write(std::string mess);
+	void _async_write(Com com);
 	void _async_read();
 	void _get_command_from_buf(boost::system::error_code ec, size_t bytes);
 
