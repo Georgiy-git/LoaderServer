@@ -1,9 +1,12 @@
+#include "Functions.hpp"
 #include "Loader.hpp"
 
 using namespace boost::asio;
 using error_code = boost::system::error_code;
 
-Loader::Loader(std::unique_ptr<boost::asio::ip::tcp::socket>&& socket) : socket{std::move(socket)} {
+Loader::Loader(std::unique_ptr<boost::asio::ip::tcp::socket>&& socket)
+	: socket{ std::move(socket) }, Func{ new Functions(this)}
+{
 	_map_init();
 	_async_read();
 }
@@ -79,7 +82,6 @@ void Loader::_get_command_from_buf(boost::system::error_code ec, size_t bytes)
 	}
 
 	_async_read();
-	_async_write(Com::unlock_write_command);
 }
 
 void Loader::_password()
@@ -89,5 +91,7 @@ void Loader::_password()
 
 void Loader::_map_init()
 {
-	//commands.insert{ "/hello"s, [] {cout << "Hello!"; } };
+	commands["/hello"] = Func->hello;
+	commands["/files"] = Func->files_on_server;
+	commands["/help"] = Func->help;
 }

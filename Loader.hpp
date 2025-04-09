@@ -11,8 +11,9 @@
 #include "Commands.hpp"
 
 class Loader {
-public:
+	friend class Functions;
 
+public:
 	Loader(std::unique_ptr<boost::asio::ip::tcp::socket>&& socket);
 
 	void command();
@@ -27,7 +28,8 @@ private:
 	void _password();
 	void _map_init();
 
-	std::unordered_map<std::string, std::function<int(std::string)>> commands;
+	std::unordered_map<std::string, std::function<void(std::string)>> commands;
 	std::unique_ptr<boost::asio::ip::tcp::socket> socket;
 	boost::asio::streambuf buf;
+	Functions* Func;
 };
