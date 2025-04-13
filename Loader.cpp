@@ -41,7 +41,7 @@ void Loader::_async_write(Com com)
 {
 	std::string str;
 	str += std::to_string((int)com);
-	str += '\f';
+	str += " \f";
 	async_write(*socket, buffer(str.data(), str.size()), [](error_code ec, size_t bytes) {
 		if (ec) {
 			std::cerr << "Ошибка отпраки сообщения: " << ec.message() << std::endl;
@@ -73,20 +73,30 @@ void Loader::_get_command_from_buf(boost::system::error_code ec, size_t bytes)
 	std::string command;
 	std::getline(data, command, '\f');
 
-	auto pair = commands.find(command);
+	std::string _command;
+	std::string command_args;
+	auto i = command.find(' ');
+	if (i != std::string::npos) {
+		_command = command.substr(0, command.find(' '));
+		command_args = command.substr(command.find(' ') + 1);
+	}
+	else {
+		_command = command;
+		command_args = "";
+	}
+
+	auto pair = commands.find(_command);
 	if (pair == commands.end()) {
 		_async_write(Com::command_not_found);
 	}
 	else {
-		pair->second(command);
+		pair->second(command_args);
 	}
-
-	_async_read();
-}
-
-void Loader::_password()
-{
-	std::cout << "Enter password:\n";
+	
+	if (_command != "/loadfile")
+	{
+		_async_read();
+	}
 }
 
 void Loader::_map_init()
@@ -94,4 +104,5 @@ void Loader::_map_init()
 	commands["/hello"] = Func->hello;
 	commands["/files"] = Func->files_on_server;
 	commands["/help"] = Func->help;
+	commands["/loadfile"] = Func->load_file;
 }

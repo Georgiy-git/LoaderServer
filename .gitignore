@@ -5,3 +5,4 @@ error_code.cpp
 LoaderServer.vcxproj
 LoaderServer.vcxproj.filters
 LoaderServer.vcxproj.user
+test.txt

@@ -24,8 +24,6 @@ private:
 	void _async_write(Com com);
 	void _async_read();
 	void _get_command_from_buf(boost::system::error_code ec, size_t bytes);
-
-	void _password();
 	void _map_init();
 
 	std::unordered_map<std::string, std::function<void(std::string)>> commands;

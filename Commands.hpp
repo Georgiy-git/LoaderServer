@@ -6,4 +6,5 @@ enum class Com {
 	message = 2,
 	files_on_server = 3,
 	help = 4,
+	load_file = 5,
 };
