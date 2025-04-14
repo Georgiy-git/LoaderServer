@@ -11,18 +11,14 @@ Loader::Loader(std::unique_ptr<boost::asio::ip::tcp::socket>&& socket)
 	_async_read();
 }
 
-void Loader::command()
-{
-	std::cout << "Enter command:   ";
-}
-
 void Loader::_async_write(const char* mess)
 {
 	std::string str(mess);
 	str += '\f';
-	async_write(*socket, buffer(str.data(), str.size()), [](error_code ec, size_t bytes) {
+	async_write(*socket, buffer(str.data(), str.size()), [&](error_code ec, size_t bytes) {
 		if (ec) {
 			std::cerr << "Ошибка отпраки сообщения: " << ec.message() << std::endl;
+			(*socket).close();
 		}
 	});
 }
@@ -30,11 +26,12 @@ void Loader::_async_write(const char* mess)
 void Loader::_async_write(std::string mess)
 {
 	mess += '\f';
-	async_write(*socket, buffer(mess.data(), mess.size()), [](error_code ec, size_t bytes) {
+	async_write(*socket, buffer(mess.data(), mess.size()), [&](error_code ec, size_t bytes) {
 		if (ec) {
 			std::cerr << "Ошибка отпраки сообщения: " << ec.message() << std::endl;
+			(*socket).close();
 		}
-		});
+	});
 }
 
 void Loader::_async_write(Com com)
@@ -42,11 +39,12 @@ void Loader::_async_write(Com com)
 	std::string str;
 	str += std::to_string((int)com);
 	str += " \f";
-	async_write(*socket, buffer(str.data(), str.size()), [](error_code ec, size_t bytes) {
+	async_write(*socket, buffer(str.data(), str.size()), [&](error_code ec, size_t bytes) {
 		if (ec) {
 			std::cerr << "Ошибка отпраки сообщения: " << ec.message() << std::endl;
+			(*socket).close();
 		}
-		});
+	});
 }
 
 void Loader::_async_read()
@@ -66,6 +64,7 @@ void Loader::_get_command_from_buf(boost::system::error_code ec, size_t bytes)
 	else if (ec) {
 		std::cerr << "Ошибка при обработке информации: " << ec.message() << std::endl;
 		(*socket).close();
+		delete this;
 		return;
 	}
 
